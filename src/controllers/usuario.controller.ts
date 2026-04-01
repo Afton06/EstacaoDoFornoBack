@@ -97,40 +97,54 @@ class UsuarioController {
   }
 
   static async update(req: Request, res: Response) {
-    const id = String(req.params.id)
-    const { nome, senha, cpf } = req.body
+  const id = String(req.params.id)
+  const { nome, senha, cpf, usuarioId } = req.body
 
-    const usuario = await prisma.usuario.findUnique({ where: { id } })
-
-    if (!usuario) {
-      return res.status(404).json({ message: 'Usuário não encontrado' })
-    }
-
-    if (cpf && !validarCPF(cpf)) {
-      return res.status(400).json({ message: 'CPF inválido' })
-    }
-
-    if (senha && !validarSenha(senha)) {
-      return res.status(400).json({ message: 'Senha deve ter no mínimo 8 caracteres, letra maiúscula, minúscula, número e caractere especial' })
-    }
-
-    const senhaCriptografada = senha
-      ? await bcrypt.hash(senha, 10)
-      : usuario.senha
-
-    const atualizado = await prisma.usuario.update({
-      where: { id },
-      data: { nome, senha: senhaCriptografada, cpf }
-    })
-
-    return res.status(200).json({
-      id: atualizado.id,
-      nome: atualizado.nome,
-      email: atualizado.email,
-      cpf: atualizado.cpf,
-      updatedAt: atualizado.updatedAt
-    })
+  if (usuarioId !== id) {
+    return res.status(403).json({ message: 'Você não tem permissão para editar este usuário' })
   }
+
+  if (!nome || nome === '') {
+    return res.status(400).json({ message: 'Nome é obrigatório' })
+  }
+
+  if (!cpf || cpf === '') {
+    return res.status(400).json({ message: 'CPF é obrigatório' })
+  }
+
+  if (!senha || senha === '') {
+    return res.status(400).json({ message: 'Senha é obrigatória' })
+  }
+
+  const usuario = await prisma.usuario.findUnique({ where: { id } })
+
+  if (!usuario) {
+    return res.status(404).json({ message: 'Usuário não encontrado' })
+  }
+
+  if (!validarCPF(cpf)) {
+    return res.status(400).json({ message: 'CPF inválido' })
+  }
+
+  if (!validarSenha(senha)) {
+    return res.status(400).json({ message: 'Senha deve ter no mínimo 8 caracteres, letra maiúscula, minúscula, número e caractere especial' })
+  }
+
+  const senhaCriptografada = await bcrypt.hash(senha, 10)
+
+  const atualizado = await prisma.usuario.update({
+    where: { id },
+    data: { nome, senha: senhaCriptografada, cpf }
+  })
+
+  return res.status(200).json({
+    id: atualizado.id,
+    nome: atualizado.nome,
+    email: atualizado.email,
+    cpf: atualizado.cpf,
+    updatedAt: atualizado.updatedAt
+  })
+}
 
   static async remove(req: Request, res: Response) {
     const id = String(req.params.id)
