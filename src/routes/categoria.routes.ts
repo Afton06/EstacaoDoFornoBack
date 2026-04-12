@@ -4,7 +4,7 @@ import { authMiddleware } from '../middlewares/auth.middleware'
 
 const categoriaRouter = Router()
 
-categoriaRouter.get('/', authMiddleware, CategoriaController.findAll)
+categoriaRouter.get('/', CategoriaController.findAll)
 categoriaRouter.get('/:id', authMiddleware, CategoriaController.getById)
 categoriaRouter.post('/', authMiddleware, CategoriaController.create)
 categoriaRouter.put('/:id', authMiddleware, CategoriaController.update)
