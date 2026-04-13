@@ -44,10 +44,11 @@ class AuthController {
             usuario: {
                 id: usuario.id,
                 nome: usuario.nome,
-                email: usuario.email
+                email: usuario.email,
+                isAdmin: usuario.isAdmin
             }
         })
     }
 }
 
-export default AuthController
+export default AuthController 

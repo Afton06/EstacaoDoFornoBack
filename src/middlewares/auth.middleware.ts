@@ -13,6 +13,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as UsuarioPayload
+    req.body = req.body || {}  // ← garante que body existe
     req.body.usuarioId = decoded.id
     next()
   } catch {

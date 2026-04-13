@@ -13,16 +13,7 @@ model Usuario {
   email     String   @unique
   senha     String
   cpf       String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Administrador {
-  id        String   @id @default(uuid())
-  nome      String
-  email     String   @unique
-  senha     String
-  cpf       String   @unique
+  isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
